@@ -5,6 +5,7 @@
     "<!--declare about sms permissions(used for dangerous(Run-time) or normal permission)-->"
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"

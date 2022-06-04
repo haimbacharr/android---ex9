@@ -8,7 +8,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -17,6 +22,11 @@ public class MainActivity extends AppCompatActivity {
     //those are the REQUEST_CODE FOR THE RECEIVE SMS AND READ_SMS
     private static final int RECEIVE_SMS_REQUEST_CODE   = 1;
     private static final int READ_SMS_REQUEST_CODE      = 2;
+
+
+    BroadcastReceiver networkActivity =  new NetworkAvailability();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +40,22 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         // This function will call each time when MainActivity will create
         askForSmsDangerousPermissions();
+        registerNetworkReceiver();
     }
 
+    //in this method we will add all the events we want to listen on them.(CONNECTIVITY_ACTION)
+    private void registerNetworkReceiver() {
+        IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+        filter.addAction(Manifest.permission.ACCESS_NETWORK_STATE);
+        registerReceiver(networkActivity, filter);
+    }
+
+    //because we register dynamically(OnResume) we need to unregister in opPause.
+    @Override
+    protected void onPause () {
+        super.onPause();
+        unregisterReceiver(networkActivity);
+    }
 
 
     //we need to ask for permission because we use dangerous permission.
@@ -41,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //we choose to use the new android flow in order to handle request.
+    //this function will request permission for user respond.
     //permission= READ_SMS.
     //permissionRequestCode = READ_SMS_REQUEST_CODE.
     private void requestSmsDangerousPermission(String permission, int permissionRequestCode)
