@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    //those are the REQUEST_CODE FOR THE RECEIVE SMS AND READ_SMS
     private static final int RECEIVE_SMS_REQUEST_CODE   = 1;
     private static final int READ_SMS_REQUEST_CODE      = 2;
 
@@ -22,10 +23,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // This two function will call each time when MainActivity will create
-        askForSmsDangerousPermissions();
-
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        // This function will call each time when MainActivity will create
+        askForSmsDangerousPermissions();
+    }
+
 
 
     //we need to ask for permission because we use dangerous permission.
@@ -48,32 +54,30 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "You must grant this permission in order to see SMS messages", Toast.LENGTH_LONG).show();
 
         // request the permission
-        else ActivityCompat.requestPermissions(this, new String[] { permission }, permissionRequestCode);
+        ActivityCompat.requestPermissions(this, new String[] { permission }, permissionRequestCode);
     }
 
+
+    //this method is called when a respond from the user has been made.
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        /*if (grantResults.length == 0)
-            return;
 
-        boolean firstPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;*/
-
-        /*switch (requestCode) {
-            case RECEIVE_SMS_REQUEST_CODE:
-                Toast.makeText(this, "RECEIVE_SMS permission granted: " + firstPermissionGranted, Toast.LENGTH_SHORT).show();
-                break;
-            case READ_SMS_REQUEST_CODE:
-                Toast.makeText(this, "READ_SMS permission granted: " + firstPermissionGranted, Toast.LENGTH_SHORT).show();
-                break;
-        }
-    }*/
         switch (requestCode) {
             case RECEIVE_SMS_REQUEST_CODE:
-                Toast.makeText(this, "RECEIVE_SMS permission granted: ", Toast.LENGTH_SHORT).show();
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                     Toast.makeText(this, "RECEIVE_SMS permission granted: ", Toast.LENGTH_SHORT).show();
+
+                /*The feature of receive sms is unavailable because the feature requires a permission that that user has denied. */
+                else
+                    Toast.makeText(this, "RECEIVE_SMS permission isn't granted: ", Toast.LENGTH_SHORT).show();
                 break;
             case READ_SMS_REQUEST_CODE:
-                Toast.makeText(this, "READ_SMS permission granted: ", Toast.LENGTH_SHORT).show();
+                if (grantResults.length > 0 && grantResults[1] == PackageManager.PERMISSION_GRANTED)
+                    Toast.makeText(this, "READ_SMS permission granted: ", Toast.LENGTH_SHORT).show();
+
+                    /*The feature of read sms is unavailable because the feature requires a permission that that user has denied. */
+                else Toast.makeText(this, "READ_SMS permission isn't granted: ", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
